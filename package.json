@@ -1,0 +1,22 @@
+{
+  "name": "hoa-portal",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "server",
+    "client"
+  ],
+  "scripts": {
+    "start": "concurrently \"npm:server:start\" \"npm:client:dev\"",
+    "server:start": "cd server && npm run start",
+    "server:dev": "cd server && npm run dev",
+    "server:seed": "cd server && npm run seed",
+    "client:dev": "cd client && npm run dev",
+    "client:build": "cd client && npm run build",
+    "docker:up": "docker-compose up --build",
+    "docker:down": "docker-compose down"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  }
+}
