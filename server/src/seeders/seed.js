@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
+const { runMigrations, resetMigrationState } = require('../migrations');
 const {
   sequelize,
   User,
@@ -23,7 +24,10 @@ const {
 } = require('../models');
 
 async function seed() {
-  await sequelize.sync({ force: true });
+  await sequelize.query('DROP SCHEMA IF EXISTS public CASCADE;');
+  await sequelize.query('CREATE SCHEMA public;');
+  await resetMigrationState();
+  await runMigrations();
 
   const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS || '10', 10);
 

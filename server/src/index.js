@@ -1,13 +1,16 @@
 require('dotenv').config();
 const app = require('./app');
 const { sequelize } = require('./models');
+const { runMigrations } = require('./migrations');
+const { validateEnv } = require('./config/env');
 
 const PORT = process.env.PORT || 5000;
 
 async function start() {
   try {
+    validateEnv();
     await sequelize.authenticate();
-    await sequelize.sync({ alter: true });
+    await runMigrations();
     console.log('Database connected');
 
     app.listen(PORT, () => {

@@ -10,6 +10,14 @@ const { sendEmail, isEmailConfigured, EmailDeliveryError } = require('../utils/e
 const { createUserSession } = require('../utils/sessions');
 const { normalizePhoneNumber, maskPhoneNumber } = require('../utils/phone');
 const { sendSms, isSmsConfigured, SmsDeliveryError } = require('../utils/sms');
+const {
+  staffLoginLimiter,
+  homeownerCodeRequestLimiter,
+  homeownerCodeVerifyLimiter,
+  mfaVerifyLimiter,
+  passwordResetRequestLimiter,
+  passwordResetConfirmLimiter
+} = require('../middleware/rateLimit');
 
 const router = express.Router();
 
@@ -96,7 +104,7 @@ router.post('/register', async (req, res) => {
   }
 });
 
-router.post('/login', async (req, res) => {
+router.post('/login', staffLoginLimiter, async (req, res) => {
   try {
     const { username, password } = req.body;
     if (!username || !password) {
@@ -200,7 +208,7 @@ router.post('/login', async (req, res) => {
   }
 });
 
-router.post('/homeowner/request-code', async (req, res) => {
+router.post('/homeowner/request-code', homeownerCodeRequestLimiter, async (req, res) => {
   try {
     const { homeowner, normalizedPhone } = await findHomeownerByMobile(req.body.mobileNumber);
     if (!normalizedPhone) {
@@ -257,7 +265,7 @@ router.post('/homeowner/request-code', async (req, res) => {
   }
 });
 
-router.post('/homeowner/verify-code', async (req, res) => {
+router.post('/homeowner/verify-code', homeownerCodeVerifyLimiter, async (req, res) => {
   try {
     const { homeowner, normalizedPhone } = await findHomeownerByMobile(req.body.mobileNumber);
     const { code } = req.body;
@@ -306,7 +314,7 @@ router.post('/homeowner/verify-code', async (req, res) => {
   }
 });
 
-router.post('/verify-mfa', async (req, res) => {
+router.post('/verify-mfa', mfaVerifyLimiter, async (req, res) => {
   try {
     const { tempToken, code } = req.body;
     if (!tempToken || !code) {
@@ -356,7 +364,7 @@ router.post('/verify-mfa', async (req, res) => {
   }
 });
 
-router.post('/request-password-reset', async (req, res) => {
+router.post('/request-password-reset', passwordResetRequestLimiter, async (req, res) => {
   try {
     const { email } = req.body;
     if (!email) {
@@ -405,7 +413,7 @@ router.post('/request-password-reset', async (req, res) => {
   }
 });
 
-router.post('/reset-password', async (req, res) => {
+router.post('/reset-password', passwordResetConfirmLimiter, async (req, res) => {
   try {
     const { token, password } = req.body;
     if (!token || !password) {

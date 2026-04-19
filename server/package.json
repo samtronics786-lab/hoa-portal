@@ -5,18 +5,23 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
-    "seed": "node src/seeders/seed.js"
+    "seed": "node src/seeders/seed.js",
+    "migrate": "node src/migrations/index.js"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1029.0",
+    "@aws-sdk/client-ses": "^3.1029.0",
+    "@sendgrid/mail": "^8.1.6",
     "bcrypt": "^5.1.0",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
+    "express-rate-limit": "^8.3.2",
+    "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.0",
     "pg": "^8.14.0",
     "sequelize": "^6.35.0",
-    "stripe": "^12.4.0",
-    "@sendgrid/mail": "^8.1.6"
+    "stripe": "^12.4.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"

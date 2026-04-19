@@ -184,12 +184,13 @@ router.post('/maintenance', async (req, res) => {
     });
 
     if (Array.isArray(attachments) && attachments.length) {
-      await Promise.all(attachments.map((attachment) => {
-        const upload = saveBase64Upload({
+      await Promise.all(attachments.map(async (attachment) => {
+        const upload = await saveBase64Upload({
           req,
           fileData: attachment.fileData,
           fileName: attachment.fileName,
-          fallbackName: title
+          fallbackName: title,
+          folder: `tickets/${request.id}`
         });
         return MaintenanceAttachment.create({
           maintenanceRequestId: request.id,

@@ -510,12 +510,13 @@ router.post('/documents', async (req, res) => {
 
     let finalUrl = url;
     if (fileData) {
-      finalUrl = saveBase64Upload({
+      finalUrl = (await saveBase64Upload({
         req,
         fileData,
         fileName,
-        fallbackName: title
-      }).url;
+        fallbackName: title,
+        folder: `documents/${hoaCommunityId}`
+      })).url;
     }
 
     const doc = await Document.create({
@@ -558,7 +559,13 @@ router.post('/maintenance/:requestId/attachments', async (req, res) => {
     if (!fileData || !fileName) {
       return res.status(400).json({ message: 'Attachment file is required' });
     }
-    const upload = saveBase64Upload({ req, fileData, fileName, fallbackName: request.title });
+    const upload = await saveBase64Upload({
+      req,
+      fileData,
+      fileName,
+      fallbackName: request.title,
+      folder: `tickets/${request.id}`
+    });
     const attachment = await MaintenanceAttachment.create({
       maintenanceRequestId: request.id,
       fileName,
@@ -715,12 +722,13 @@ router.post('/events/:eventId/assets', async (req, res) => {
 
     let finalUrl = url;
     if (fileData) {
-      finalUrl = saveBase64Upload({
+      finalUrl = (await saveBase64Upload({
         req,
         fileData,
         fileName,
-        fallbackName: title
-      }).url;
+        fallbackName: title,
+        folder: `events/${event.id}`
+      })).url;
     }
 
     const asset = await EventAsset.create({
