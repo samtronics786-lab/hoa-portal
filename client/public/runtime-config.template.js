@@ -1,0 +1,3 @@
+window.__APP_CONFIG__ = {
+  API_BASE_URL: "${RUNTIME_API_BASE_URL}"
+};

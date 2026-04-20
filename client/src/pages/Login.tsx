@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { useState } from 'react';
+import { getApiBaseUrl } from '../config';
 
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
+const apiBaseUrl = getApiBaseUrl();
 const tunnelHeaders = { 'ngrok-skip-browser-warning': 'true' };
 
 interface LoginProps {

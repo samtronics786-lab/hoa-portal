@@ -1,10 +1,11 @@
 import { FormEvent, ReactNode, useEffect, useState } from 'react';
 import axios from 'axios';
+import { getApiBaseUrl } from '../config';
 
 interface CurrentUser { id: string; email?: string; username?: string; mobileNumber?: string; role: string; }
 interface DashboardProps { user: CurrentUser; }
 
-const api = axios.create({ baseURL: import.meta.env.VITE_API_BASE_URL || '/api' });
+const api = axios.create({ baseURL: getApiBaseUrl() });
 api.interceptors.request.use((config) => {
   config.headers = config.headers || {};
   config.headers['ngrok-skip-browser-warning'] = 'true';

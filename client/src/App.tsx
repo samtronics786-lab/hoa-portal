@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import axios from 'axios';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
+import { getApiBaseUrl } from './config';
 
 interface AuthUser {
   id: string;
@@ -12,7 +13,7 @@ interface AuthUser {
   role: string;
 }
 
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
+const apiBaseUrl = getApiBaseUrl();
 const tunnelHeaders = { 'ngrok-skip-browser-warning': 'true' };
 
 function formatRole(role: string) {
