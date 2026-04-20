@@ -6,7 +6,8 @@
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
     "seed": "node src/seeders/seed.js",
-    "migrate": "node src/migrations/index.js"
+    "migrate": "node src/migrations/index.js",
+    "bootstrap:staff": "node src/scripts/bootstrapStaffUser.js"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1029.0",

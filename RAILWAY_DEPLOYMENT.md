@@ -114,3 +114,17 @@ Before a real pilot launch, also complete:
 4. Configure real SMS/email delivery
 5. Add rate limiting to authentication endpoints
 6. Add monitoring and backups
+
+## 7. Safe first staff-user bootstrap
+
+Do not use `npm run seed` on a real Railway database. That command drops and recreates the schema.
+
+To create the first real staff account safely, open the Railway shell for the backend service and run:
+
+`npm run bootstrap:staff -- --email admin@deanspondcommunity.com --username admin --password "REPLACE_WITH_A_STRONG_PASSWORD" --role super_admin`
+
+You can also create community-scoped staff users with:
+
+`npm run bootstrap:staff -- --email manager@deanspondcommunity.com --username manager --password "REPLACE_WITH_A_STRONG_PASSWORD" --role management_admin --communities <community-id>`
+
+Once a real `super_admin` account exists, use the in-app admin screens to create the rest of the staff users.
