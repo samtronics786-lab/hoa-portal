@@ -27,7 +27,9 @@ function serializeUser(user) {
     email: user.email,
     username: user.username,
     mobileNumber: user.mobileNumber,
-    role: user.role
+    role: user.role,
+    status: user.status,
+    mfaEnabled: Boolean(user.mfaEnabled)
   };
 }
 

@@ -11,6 +11,8 @@ interface AuthUser {
   username?: string;
   mobileNumber?: string;
   role: string;
+  status?: string;
+  mfaEnabled?: boolean;
 }
 
 const apiBaseUrl = getApiBaseUrl();

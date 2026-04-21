@@ -6,7 +6,7 @@ const apiBaseUrl = getApiBaseUrl();
 const tunnelHeaders = { 'ngrok-skip-browser-warning': 'true' };
 
 interface LoginProps {
-  onLogin: (token: string, user: { id: string; email?: string; username?: string; mobileNumber?: string; role: string }) => void;
+  onLogin: (token: string, user: { id: string; email?: string; username?: string; mobileNumber?: string; role: string; status?: string; mfaEnabled?: boolean }) => void;
 }
 
 type LoginMode = 'staff' | 'homeowner';
