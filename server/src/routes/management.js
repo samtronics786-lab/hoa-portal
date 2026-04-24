@@ -1009,16 +1009,45 @@ router.get('/users', async (req, res) => {
 });
 
 router.post('/users', async (req, res) => {
-  if (req.user.role !== 'super_admin') {
-    return res.status(403).json({ message: 'Only super admins can create users' });
+  try {
+    if (req.user.role !== 'super_admin') {
+      return res.status(403).json({ message: 'Only super admins can create users' });
+    }
+
+    const { email, username, mobileNumber, password, role, status = 'active', mfaEnabled = false } = req.body;
+    if (!email || !role) return res.status(400).json({ message: 'Email and role are required' });
+
+    const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS || '10', 10);
+    const passwordHash = await bcrypt.hash(password || `Temp${Math.random().toString(36).slice(2)}!`, saltRounds);
+    const user = await User.create({
+      email,
+      username,
+      mobileNumber,
+      passwordHash,
+      role,
+      status,
+      mfaEnabled
+    });
+
+    await logAudit({
+      req,
+      userId: req.user.id,
+      action: 'super_admin.create_user',
+      entityType: 'user',
+      entityId: user.id
+    });
+
+    res.status(201).json(user);
+  } catch (error) {
+    console.error('Failed to create user:', error);
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      return res.status(409).json({ message: 'A user with that email, username, or mobile number already exists' });
+    }
+    if (error.name === 'SequelizeValidationError') {
+      return res.status(400).json({ message: error.errors?.map((item) => item.message).join(', ') || 'Invalid user data' });
+    }
+    res.status(500).json({ message: 'Failed to create user' });
   }
-  const { email, username, mobileNumber, password, role, status = 'active', mfaEnabled = false } = req.body;
-  if (!email || !role) return res.status(400).json({ message: 'Email and role are required' });
-  const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS || '10', 10);
-  const passwordHash = await bcrypt.hash(password || `Temp${Math.random().toString(36).slice(2)}!`, saltRounds);
-  const user = await User.create({ email, username, mobileNumber, passwordHash, role, status, mfaEnabled });
-  await logAudit({ req, userId: req.user.id, action: 'super_admin.create_user', entityType: 'user', entityId: user.id });
-  res.status(201).json(user);
 });
 
 router.patch('/users/:userId', async (req, res) => {
