@@ -1,4 +1,5 @@
 const express = require('express');
+const bcrypt = require('bcrypt');
 const { Op } = require('sequelize');
 const { authenticate, authorize } = require('../middleware/auth');
 const { HOACommunity, PropertyLot, Homeowner, Charge, Payment, MaintenanceRequest, MaintenanceAttachment, MaintenanceComment, Document, Notice, MeetingRecord, Event, EventAsset, AuditLog, User, BoardMemberAssignment, ManagementCommunityAssignment, Survey, SurveyOption, SurveyResponse } = require('../models');
