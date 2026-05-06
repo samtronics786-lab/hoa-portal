@@ -731,6 +731,66 @@ a {
   white-space: nowrap;
 }
 
+.directory-card-list {
+  display: grid;
+  gap: 14px;
+}
+
+.directory-community-card {
+  padding: 16px 18px;
+  border: 1px solid rgba(31, 42, 51, 0.08);
+  border-radius: 18px;
+  background: rgba(255,255,255,0.82);
+}
+
+.directory-title {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.directory-subtitle,
+.directory-description {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.directory-description {
+  margin-top: 10px;
+  line-height: 1.45;
+}
+
+.directory-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.directory-stats div {
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(38, 70, 63, 0.07);
+}
+
+.directory-stats span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.directory-stats strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 1.2rem;
+}
+
+.directory-table {
+  max-height: 520px;
+  overflow: auto;
+}
+
 .portal-kicker {
   font-size: 0.75rem;
   text-transform: uppercase;
