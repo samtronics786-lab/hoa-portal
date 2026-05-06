@@ -60,6 +60,7 @@ async function runMigrations(options = {}) {
 
 async function rollbackLastMigration(options = {}) {
   const logger = options.logger || console;
+  await ensureMetaTable();
   const [rows] = await sequelize.query(`SELECT "name" FROM "${metaTableName}" ORDER BY "name" DESC LIMIT 1;`);
   const latest = rows[0];
 

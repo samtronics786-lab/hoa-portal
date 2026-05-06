@@ -134,20 +134,6 @@ export default function Login({ onLogin }: LoginProps) {
             A cleaner HOA experience for residents, board leaders, and administrators, with mobile access for homeowners and controlled staff operations.
           </p>
 
-          <div className="demo-credentials">
-            <div className="demo-item">
-              <div className="small text-uppercase text-white-50">Super Admin</div>
-              <div className="fw-semibold">superadmin / Admin123!</div>
-            </div>
-            <div className="demo-item">
-              <div className="small text-uppercase text-white-50">Manager</div>
-              <div className="fw-semibold">manager / Manager123!</div>
-            </div>
-            <div className="demo-item">
-              <div className="small text-uppercase text-white-50">Homeowner</div>
-              <div className="fw-semibold">Use registered mobile number</div>
-            </div>
-          </div>
         </section>
 
         <section className="login-card">

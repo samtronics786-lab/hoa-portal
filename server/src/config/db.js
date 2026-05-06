@@ -21,8 +21,7 @@ const sharedOptions = {
   dialectOptions: useSsl
     ? {
       ssl: {
-        require: true,
-        rejectUnauthorized: false
+        require: true
       }
     }
     : undefined
