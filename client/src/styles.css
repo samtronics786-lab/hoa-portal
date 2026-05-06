@@ -333,11 +333,11 @@ a {
 
 .section-card {
   height: auto;
-  border: 1px solid rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(27, 45, 40, 0.16);
   border-radius: 22px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.78), rgba(255,255,255,0.68));
-  box-shadow: 0 12px 26px rgba(35, 50, 64, 0.06);
-  backdrop-filter: blur(12px);
+  background: linear-gradient(180deg, rgba(238, 243, 240, 0.94), rgba(219, 231, 225, 0.9));
+  box-shadow: 0 24px 58px rgba(22, 35, 43, 0.18), 0 8px 18px rgba(22, 35, 43, 0.1);
+  backdrop-filter: blur(14px);
 }
 
 .section-card + .section-card {
@@ -356,20 +356,20 @@ a {
 
 .admin-action-card {
   min-height: 116px;
-  border: 1px solid rgba(38, 70, 63, 0.16);
+  border: 1px solid rgba(27, 45, 40, 0.18);
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.74);
+  background: linear-gradient(180deg, rgba(226, 236, 230, 0.96), rgba(204, 220, 211, 0.9));
   padding: 18px;
   text-align: left;
   color: #1f332d;
-  box-shadow: 0 10px 22px rgba(35, 50, 64, 0.06);
+  box-shadow: 0 18px 38px rgba(22, 35, 43, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.56);
   transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
 }
 
 .admin-action-card:hover,
 .admin-action-card:focus-visible {
   border-color: rgba(38, 70, 63, 0.34);
-  box-shadow: 0 16px 30px rgba(35, 50, 64, 0.12);
+  box-shadow: 0 24px 46px rgba(22, 35, 43, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.64);
   transform: translateY(-1px);
 }
 
@@ -523,10 +523,10 @@ a {
 
 .community-record-card {
   padding: 18px 20px;
-  border: 1px solid rgba(31, 42, 51, 0.08);
+  border: 1px solid rgba(31, 42, 51, 0.14);
   border-radius: 22px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(245,247,245,0.84));
-  box-shadow: 0 14px 30px rgba(35, 50, 64, 0.06);
+  background: linear-gradient(180deg, rgba(235, 241, 238, 0.98), rgba(217, 228, 222, 0.92));
+  box-shadow: 0 20px 42px rgba(22, 35, 43, 0.14), 0 7px 16px rgba(22, 35, 43, 0.08);
 }
 
 .community-record-head {
@@ -599,9 +599,10 @@ a {
 .event-list-item {
   width: 100%;
   padding: 16px 18px;
-  border: 1px solid rgba(31, 42, 51, 0.08);
+  border: 1px solid rgba(31, 42, 51, 0.14);
   border-radius: 20px;
-  background: rgba(255,255,255,0.82);
+  background: linear-gradient(180deg, rgba(235, 241, 238, 0.96), rgba(218, 229, 223, 0.88));
+  box-shadow: 0 14px 28px rgba(22, 35, 43, 0.11);
   text-align: left;
   transition: 160ms ease;
 }
@@ -609,8 +610,8 @@ a {
 .event-list-item:hover,
 .event-list-item.is-active {
   border-color: rgba(38, 70, 63, 0.2);
-  background: linear-gradient(180deg, rgba(240,247,245,0.98), rgba(226,236,231,0.9));
-  box-shadow: 0 14px 26px rgba(35, 50, 64, 0.08);
+  background: linear-gradient(180deg, rgba(225, 235, 230, 0.98), rgba(204, 219, 211, 0.92));
+  box-shadow: 0 20px 38px rgba(22, 35, 43, 0.18);
 }
 
 .event-list-date {
@@ -624,10 +625,10 @@ a {
 .event-detail-card,
 .event-manage-card {
   padding: 22px;
-  border: 1px solid rgba(31, 42, 51, 0.08);
+  border: 1px solid rgba(31, 42, 51, 0.14);
   border-radius: 24px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(245,247,245,0.85));
-  box-shadow: 0 14px 28px rgba(35, 50, 64, 0.07);
+  background: linear-gradient(180deg, rgba(235, 241, 238, 0.98), rgba(216, 228, 222, 0.92));
+  box-shadow: 0 22px 46px rgba(22, 35, 43, 0.15), 0 8px 18px rgba(22, 35, 43, 0.08);
 }
 
 .event-summary {
@@ -706,14 +707,15 @@ a {
 
 .soft-panel {
   padding: 16px 18px;
-  border: 1px solid var(--line);
+  border: 1px solid rgba(31, 42, 51, 0.13);
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.72);
+  background: rgba(226, 236, 230, 0.82);
+  box-shadow: 0 12px 24px rgba(22, 35, 43, 0.09);
 }
 
 .soft-panel.toned {
   background:
-    linear-gradient(180deg, rgba(255,255,255,0.92), rgba(246, 249, 248, 0.82));
+    linear-gradient(180deg, rgba(234, 241, 237, 0.96), rgba(218, 229, 223, 0.9));
 }
 
 .metric-strip {
@@ -724,9 +726,10 @@ a {
 
 .metric-card {
   padding: 18px 20px;
-  border: 1px solid rgba(35, 42, 51, 0.08);
+  border: 1px solid rgba(35, 42, 51, 0.14);
   border-radius: 20px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(245,247,245,0.84));
+  background: linear-gradient(180deg, rgba(231, 239, 235, 0.98), rgba(211, 225, 217, 0.92));
+  box-shadow: 0 18px 36px rgba(22, 35, 43, 0.14), 0 6px 14px rgba(22, 35, 43, 0.08);
 }
 
 .metric-card-action {
@@ -739,7 +742,7 @@ a {
 .metric-card-action:hover,
 .metric-card-action:focus-visible {
   border-color: rgba(38, 70, 63, 0.32);
-  box-shadow: 0 14px 26px rgba(35, 50, 64, 0.14);
+  box-shadow: 0 24px 44px rgba(22, 35, 43, 0.22), 0 8px 18px rgba(22, 35, 43, 0.1);
   transform: translateY(-1px);
 }
 
@@ -759,9 +762,10 @@ a {
 
 .portal-table {
   overflow: hidden;
-  border: 1px solid var(--line);
+  border: 1px solid rgba(31, 42, 51, 0.14);
   border-radius: 20px;
-  background: rgba(255,255,255,0.86);
+  background: rgba(231, 239, 235, 0.94);
+  box-shadow: 0 18px 36px rgba(22, 35, 43, 0.12);
 }
 
 .portal-table table {
@@ -826,9 +830,10 @@ a {
 
 .directory-community-card {
   padding: 16px 18px;
-  border: 1px solid rgba(31, 42, 51, 0.08);
+  border: 1px solid rgba(31, 42, 51, 0.14);
   border-radius: 18px;
-  background: rgba(255,255,255,0.82);
+  background: linear-gradient(180deg, rgba(232, 240, 236, 0.96), rgba(214, 227, 220, 0.9));
+  box-shadow: 0 16px 32px rgba(22, 35, 43, 0.12);
 }
 
 .directory-title {
@@ -1189,9 +1194,10 @@ a {
 .timeline-card,
 .audit-item {
   padding: 16px 18px;
-  border: 1px solid rgba(31, 42, 51, 0.08);
+  border: 1px solid rgba(31, 42, 51, 0.14);
   border-radius: 20px;
-  background: rgba(255,255,255,0.82);
+  background: linear-gradient(180deg, rgba(232, 240, 236, 0.96), rgba(214, 227, 220, 0.9));
+  box-shadow: 0 16px 34px rgba(22, 35, 43, 0.13), 0 6px 14px rgba(22, 35, 43, 0.08);
 }
 
 .timeline-card + .timeline-card,
