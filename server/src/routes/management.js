@@ -37,6 +37,12 @@ function requireSuperAdmin(req, res) {
   return true;
 }
 
+const USER_MANAGEMENT_ROLES = ['management_admin', 'community_manager', 'admin_staff', 'board_member', 'homeowner'];
+
+function canManageUsers(role) {
+  return role === 'super_admin' || role === 'management_admin';
+}
+
 function buildTicketInclude() {
   return [{
     model: Homeowner,
@@ -990,8 +996,8 @@ router.get('/reports/surveys', async (req, res) => {
 });
 
 router.get('/users', async (req, res) => {
-  if (req.user.role !== 'super_admin') {
-    return res.status(403).json({ message: 'Only super admins can manage users' });
+  if (!canManageUsers(req.user.role)) {
+    return res.status(403).json({ message: 'Only admins can manage users' });
   }
   const users = await User.findAll({
     attributes: ['id', 'username', 'email', 'mobileNumber', 'role', 'status', 'mfaEnabled', 'createdAt'],
@@ -1007,12 +1013,16 @@ router.get('/users', async (req, res) => {
 
 router.post('/users', async (req, res) => {
   try {
-    if (req.user.role !== 'super_admin') {
-      return res.status(403).json({ message: 'Only super admins can create users' });
+    if (!canManageUsers(req.user.role)) {
+      return res.status(403).json({ message: 'Only admins can create users' });
     }
 
     const { email, username, mobileNumber, password, role, status = 'active', mfaEnabled = false } = req.body;
     if (!email || !role) return res.status(400).json({ message: 'Email and role are required' });
+    const allowedRoles = req.user.role === 'super_admin' ? ['super_admin', ...USER_MANAGEMENT_ROLES] : USER_MANAGEMENT_ROLES;
+    if (!allowedRoles.includes(role)) {
+      return res.status(403).json({ message: 'You cannot create users with that role' });
+    }
 
     const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS || '10', 10);
     const passwordHash = await bcrypt.hash(password || `Temp${Math.random().toString(36).slice(2)}!`, saltRounds);
@@ -1029,7 +1039,7 @@ router.post('/users', async (req, res) => {
     await logAudit({
       req,
       userId: req.user.id,
-      action: 'super_admin.create_user',
+      action: 'management.create_user',
       entityType: 'user',
       entityId: user.id
     });
