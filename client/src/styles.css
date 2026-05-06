@@ -698,6 +698,39 @@ a {
   border-bottom: 0;
 }
 
+.audit-rollup {
+  display: grid;
+  gap: 8px;
+}
+
+.audit-rollup-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.audit-rollup-item:last-child {
+  border-bottom: 0;
+}
+
+.audit-rollup-action {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.audit-rollup-meta {
+  color: var(--muted);
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
 .portal-kicker {
   font-size: 0.75rem;
   text-transform: uppercase;
