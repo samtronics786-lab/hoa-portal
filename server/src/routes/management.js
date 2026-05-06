@@ -114,10 +114,6 @@ router.get('/overview', async (req, res) => {
     activeSurveyCount: activeSurveys
   };
 
-  if (req.user.role === 'super_admin') {
-    summary.overdueChargeCount = await Charge.count({ where: { status: 'overdue', communityId: { [Op.in]: communityIds } } });
-  }
-
   res.json({
     summary,
     openRequests: scopedOpenRequests,
