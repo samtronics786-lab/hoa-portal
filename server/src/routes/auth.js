@@ -44,21 +44,65 @@ function legacyPhoneFormat(value = '') {
   return value;
 }
 
-async function findHomeownerByMobile(mobileNumber) {
-  const normalizedPhone = normalizePhoneNumber(mobileNumber);
+function isEmailIdentifier(value = '') {
+  return String(value).includes('@');
+}
+
+function normalizeEmail(value = '') {
+  return String(value).trim().toLowerCase();
+}
+
+function maskEmail(value = '') {
+  const [name = '', domain = ''] = String(value).split('@');
+  if (!name || !domain) return value;
+  const visible = name.slice(0, 2);
+  return `${visible}${'*'.repeat(Math.max(name.length - 2, 2))}@${domain}`;
+}
+
+async function findHomeownerByIdentifier(identifier) {
+  const rawIdentifier = String(identifier || '').trim();
+  if (!rawIdentifier) {
+    return { homeowner: null, normalizedPhone: null, normalizedEmail: null, method: null };
+  }
+
+  if (isEmailIdentifier(rawIdentifier)) {
+    const normalizedEmail = normalizeEmail(rawIdentifier);
+    let homeowner = await Homeowner.findOne({
+      where: {
+        email: { [Op.iLike]: normalizedEmail }
+      },
+      include: [{ model: User, as: 'user' }]
+    });
+
+    if (!homeowner) {
+      homeowner = await Homeowner.findOne({
+        include: [{
+          model: User,
+          as: 'user',
+          where: {
+            email: { [Op.iLike]: normalizedEmail }
+          }
+        }]
+      });
+    }
+
+    return { homeowner, normalizedPhone: null, normalizedEmail, method: 'email' };
+  }
+
+  const normalizedPhone = normalizePhoneNumber(rawIdentifier);
   const legacyPhone = legacyPhoneFormat(normalizedPhone);
   const homeowner = await Homeowner.findOne({
     where: {
       [Op.or]: [
         { phone: normalizedPhone },
-        { phone: mobileNumber },
+        { phone: rawIdentifier },
         { phone: legacyPhone }
       ]
     },
     include: [{ model: User, as: 'user' }]
   });
 
-  return { homeowner, normalizedPhone };
+  return { homeowner, normalizedPhone, normalizedEmail: null, method: 'sms' };
 }
 
 router.post('/register', async (req, res) => {
@@ -212,31 +256,42 @@ router.post('/login', staffLoginLimiter, async (req, res) => {
 
 router.post('/homeowner/request-code', homeownerCodeRequestLimiter, async (req, res) => {
   try {
-    const { homeowner, normalizedPhone } = await findHomeownerByMobile(req.body.mobileNumber);
-    if (!normalizedPhone) {
-      return res.status(400).json({ message: 'A registered mobile number is required' });
+    const identifier = req.body.identifier || req.body.mobileNumber;
+    const { homeowner, normalizedPhone, normalizedEmail, method } = await findHomeownerByIdentifier(identifier);
+    if (!method) {
+      return res.status(400).json({ message: 'A registered email or mobile number is required' });
     }
 
     if (!homeowner?.user || homeowner.user.status !== 'active') {
-      return res.status(404).json({ message: 'No active homeowner account was found for that mobile number' });
+      return res.status(404).json({ message: 'No active homeowner account was found for that email or mobile number' });
     }
 
     const code = String(Math.floor(10000 + Math.random() * 90000));
     homeowner.user.mobileLoginCode = code;
     homeowner.user.mobileLoginCodeExpiresAt = new Date(Date.now() + 1000 * 60 * 10);
-    homeowner.user.mobileNumber = normalizedPhone;
+    if (normalizedPhone) homeowner.user.mobileNumber = normalizedPhone;
     await homeowner.user.save();
 
-    let delivery = 'sms';
+    let delivery = method;
     try {
-      await sendSms({
-        to: normalizedPhone,
-        body: `Your Deans Pond HOA login code is ${code}. It expires in 10 minutes.`
-      });
+      if (method === 'email') {
+        await sendEmail({
+          to: normalizedEmail,
+          subject: 'Your Deans Pond HOA login code',
+          text: `Your Deans Pond HOA login code is ${code}. It expires in 10 minutes.`,
+          html: `<p>Your Deans Pond HOA login code is <strong>${code}</strong>.</p><p>It expires in 10 minutes.</p>`
+        });
+      } else {
+        await sendSms({
+          to: normalizedPhone,
+          body: `Your Deans Pond HOA login code is ${code}. It expires in 10 minutes.`
+        });
+      }
     } catch (error) {
-      if (!(error instanceof SmsDeliveryError)) throw error;
+      const expectedDeliveryError = error instanceof SmsDeliveryError || error instanceof EmailDeliveryError;
+      if (!expectedDeliveryError) throw error;
       if (process.env.NODE_ENV === 'production') {
-        return res.status(503).json({ message: `SMS delivery failed: ${error.message}` });
+        return res.status(503).json({ message: `${method === 'email' ? 'Email' : 'SMS'} delivery failed: ${error.message}` });
       }
       delivery = 'development';
     }
@@ -250,14 +305,17 @@ router.post('/homeowner/request-code', homeownerCodeRequestLimiter, async (req, 
       details: { delivery }
     });
 
+    const destination = method === 'email' ? maskEmail(normalizedEmail) : maskPhoneNumber(normalizedPhone);
     const response = {
-      message: `A login code was sent to ${maskPhoneNumber(normalizedPhone)}.`,
-      maskedMobile: maskPhoneNumber(normalizedPhone)
+      message: `A login code was sent to ${destination}.`,
+      delivery,
+      maskedEmail: normalizedEmail ? maskEmail(normalizedEmail) : undefined,
+      maskedMobile: normalizedPhone ? maskPhoneNumber(normalizedPhone) : undefined
     };
 
     if (delivery === 'development') {
       response.developmentCode = code;
-      response.message = 'SMS is not configured in this environment. Use the development code shown below.';
+      response.message = `${method === 'email' ? 'Email' : 'SMS'} is not configured in this environment. Use the development code shown below.`;
     }
 
     res.json(response);
@@ -269,10 +327,11 @@ router.post('/homeowner/request-code', homeownerCodeRequestLimiter, async (req, 
 
 router.post('/homeowner/verify-code', homeownerCodeVerifyLimiter, async (req, res) => {
   try {
-    const { homeowner, normalizedPhone } = await findHomeownerByMobile(req.body.mobileNumber);
+    const identifier = req.body.identifier || req.body.mobileNumber;
+    const { homeowner, method } = await findHomeownerByIdentifier(identifier);
     const { code } = req.body;
-    if (!normalizedPhone || !code) {
-      return res.status(400).json({ message: 'Mobile number and login code are required' });
+    if (!method || !code) {
+      return res.status(400).json({ message: 'Email or mobile number and login code are required' });
     }
 
     if (!homeowner?.user || homeowner.user.role !== 'homeowner') {

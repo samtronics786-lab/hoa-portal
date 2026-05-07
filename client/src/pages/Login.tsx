@@ -15,7 +15,7 @@ export default function Login({ onLogin }: LoginProps) {
   const [mode, setMode] = useState<LoginMode>('staff');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [mobileNumber, setMobileNumber] = useState('');
+  const [homeownerIdentifier, setHomeownerIdentifier] = useState('');
   const [mobileCode, setMobileCode] = useState('');
   const [codeRequested, setCodeRequested] = useState(false);
   const [devCode, setDevCode] = useState('');
@@ -57,11 +57,11 @@ export default function Login({ onLogin }: LoginProps) {
     setError('');
     setDevCode('');
     try {
-      const res = await axios.post(`${apiBaseUrl}/auth/homeowner/request-code`, { mobileNumber }, { headers: tunnelHeaders });
+      const res = await axios.post(`${apiBaseUrl}/auth/homeowner/request-code`, { identifier: homeownerIdentifier }, { headers: tunnelHeaders });
       setCodeRequested(true);
       if (res.data.developmentCode) setDevCode(res.data.developmentCode);
     } catch (err) {
-      setError(getErrorMessage(err, 'Unable to send mobile login code.'));
+      setError(getErrorMessage(err, 'Unable to send homeowner login code.'));
     }
   };
 
@@ -69,7 +69,7 @@ export default function Login({ onLogin }: LoginProps) {
     event.preventDefault();
     setError('');
     try {
-      const res = await axios.post(`${apiBaseUrl}/auth/homeowner/verify-code`, { mobileNumber, code: mobileCode }, { headers: tunnelHeaders });
+      const res = await axios.post(`${apiBaseUrl}/auth/homeowner/verify-code`, { identifier: homeownerIdentifier, code: mobileCode }, { headers: tunnelHeaders });
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('user', JSON.stringify(res.data.user));
       onLogin(res.data.token, res.data.user);
@@ -131,14 +131,14 @@ export default function Login({ onLogin }: LoginProps) {
           <div className="hero-kicker mb-3">Single-Family HOA Operations</div>
           <h1 className="display-5 fw-semibold mb-3">Property and HOA Management Services in New Jersey.</h1>
           <p className="mb-4 text-white-50">
-            A cleaner HOA experience for residents, board leaders, and administrators, with mobile access for homeowners and controlled staff operations.
+            A cleaner HOA experience for residents, board leaders, and administrators, with secure homeowner access and controlled staff operations.
           </p>
 
         </section>
 
         <section className="login-card">
           <div className="section-title mb-4">
-            <h2>{showReset ? 'Reset staff password' : mfaPendingUser ? 'Verify sign in' : mode === 'staff' ? 'Staff sign in' : codeRequested ? 'Enter mobile code' : 'Homeowner mobile sign in'}</h2>
+            <h2>{showReset ? 'Reset staff password' : mfaPendingUser ? 'Verify sign in' : mode === 'staff' ? 'Staff sign in' : codeRequested ? 'Enter login code' : 'Homeowner sign in'}</h2>
             <span className="section-tag">Secure access</span>
           </div>
 
@@ -175,12 +175,12 @@ export default function Login({ onLogin }: LoginProps) {
                 </>
               ) : (
                 <>
-                  <p className="text-muted mb-4">Homeowners sign in with their registered mobile number. We’ll text a 5-digit one-time login code to that number.</p>
+                  <p className="text-muted mb-4">Homeowners sign in with their registered email or mobile number. We’ll send a 5-digit one-time login code.</p>
                   {!codeRequested ? (
                     <form onSubmit={requestCode} className="portal-form">
                       <div className="mb-3">
-                        <label className="form-label">Registered Mobile Number</label>
-                        <input value={mobileNumber} onChange={(e) => setMobileNumber(e.target.value)} className="form-control" placeholder="(555) 100-0002" />
+                        <label className="form-label">Registered Email or Mobile Number</label>
+                        <input value={homeownerIdentifier} onChange={(e) => setHomeownerIdentifier(e.target.value)} className="form-control" placeholder="owner@example.com or (555) 100-0002" />
                       </div>
                       {error && <div className="alert alert-danger">{error}</div>}
                       <button type="submit" className="btn portal-btn w-100">Send Login Code</button>
@@ -199,7 +199,7 @@ export default function Login({ onLogin }: LoginProps) {
 
                   {codeRequested ? (
                     <button type="button" className="btn btn-link px-0 mt-3" onClick={resetHomeownerFlow}>
-                      Use a different mobile number
+                      Use a different email or mobile number
                     </button>
                   ) : null}
                 </>
