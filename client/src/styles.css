@@ -40,11 +40,12 @@ a {
 }
 
 .portal-shell {
-  border: 1px solid rgba(255, 255, 255, 0.74);
+  border: 1px solid rgba(28, 49, 43, 0.22);
   border-radius: 26px;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.84), rgba(255, 255, 255, 0.8));
-  box-shadow: 0 18px 38px rgba(23, 35, 43, 0.08);
+    radial-gradient(circle at top left, rgba(54, 94, 82, 0.22), transparent 34%),
+    linear-gradient(180deg, rgba(225, 234, 229, 0.9), rgba(196, 213, 204, 0.84));
+  box-shadow: 0 34px 80px rgba(12, 24, 31, 0.26), 0 12px 30px rgba(12, 24, 31, 0.16);
   backdrop-filter: blur(16px);
   overflow: hidden;
 }
@@ -128,11 +129,11 @@ a {
 
 .role-hero {
   position: relative;
-  padding: 28px 30px;
+  padding: 34px 36px;
   border-radius: 24px;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.58);
-  box-shadow: 0 18px 34px rgba(23, 35, 43, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 30px 72px rgba(10, 20, 26, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.18);
   isolation: isolate;
 }
 
@@ -151,11 +152,11 @@ a {
 .role-hero::after {
   content: "";
   position: absolute;
-  inset: auto -40px -65px auto;
-  width: 140px;
-  height: 140px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.16);
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(115deg, rgba(8, 17, 15, 0.78), rgba(20, 54, 46, 0.48) 52%, rgba(132, 160, 146, 0.18)),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0 1px, transparent 1px 82px);
 }
 
 .role-hero.homeowner {
@@ -170,7 +171,7 @@ a {
 
 .role-hero.management {
   color: #f4f8f6;
-  background: linear-gradient(135deg, rgba(16, 34, 28, 0.68) 0%, rgba(30, 61, 52, 0.5) 50%, rgba(86, 118, 108, 0.3) 100%);
+  background: linear-gradient(135deg, rgba(7, 18, 15, 0.94) 0%, rgba(19, 55, 47, 0.84) 54%, rgba(76, 105, 94, 0.7) 100%);
   backdrop-filter: blur(5px);
 }
 
@@ -256,7 +257,7 @@ a {
 .role-hero.management h2 {
   font-size: clamp(2.2rem, 4vw, 3.4rem);
   line-height: 1.02;
-  letter-spacing: -0.045em;
+  letter-spacing: 0;
 }
 
 .hero-kicker {
@@ -264,7 +265,7 @@ a {
   padding: 8px 15px;
   border-radius: 999px;
   font-size: 0.78rem;
-  letter-spacing: 0.12em;
+  letter-spacing: 0;
   text-transform: uppercase;
   background: rgba(255, 255, 255, 0.18);
 }
@@ -306,15 +307,22 @@ a {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  width: fit-content;
+  max-width: 100%;
   margin: 0 0 4px;
+  padding: 8px;
   align-items: center;
+  border: 1px solid rgba(25, 45, 40, 0.16);
+  border-radius: 999px;
+  background: rgba(214, 226, 219, 0.72);
+  box-shadow: 0 18px 40px rgba(13, 24, 31, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 
 .dashboard-tab {
   border: 1px solid rgba(31, 42, 51, 0.1);
   border-radius: 999px;
-  padding: 9px 15px;
-  background: rgba(255, 255, 255, 0.76);
+  padding: 10px 16px;
+  background: rgba(244, 248, 246, 0.64);
   color: var(--muted);
   font-size: 0.9rem;
   font-weight: 600;
@@ -326,18 +334,28 @@ a {
 .dashboard-tab:hover,
 .dashboard-tab.is-active {
   color: var(--ink);
-  border-color: rgba(38, 70, 63, 0.2);
-  background: linear-gradient(180deg, rgba(234, 241, 237, 0.95), rgba(219, 231, 225, 0.88));
-  box-shadow: 0 10px 20px rgba(35, 50, 64, 0.08);
+  border-color: rgba(38, 70, 63, 0.28);
+  background: linear-gradient(180deg, rgba(242, 247, 244, 0.98), rgba(218, 231, 224, 0.94));
+  box-shadow: 0 14px 28px rgba(13, 24, 31, 0.14);
 }
 
 .section-card {
+  position: relative;
   height: auto;
   border: 1px solid rgba(24, 43, 38, 0.24);
   border-radius: 22px;
   background: linear-gradient(180deg, rgba(219, 230, 224, 0.97), rgba(194, 212, 202, 0.94));
   box-shadow: 0 30px 72px rgba(13, 24, 31, 0.26), 0 12px 28px rgba(13, 24, 31, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.56);
   backdrop-filter: blur(14px);
+  overflow: hidden;
+}
+
+.section-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 4px;
+  background: linear-gradient(90deg, rgba(39, 91, 77, 0.95), rgba(154, 184, 166, 0.68), rgba(57, 83, 110, 0.58));
 }
 
 .section-card + .section-card {
@@ -355,6 +373,7 @@ a {
 }
 
 .admin-action-card {
+  position: relative;
   min-height: 116px;
   border: 1px solid rgba(24, 43, 38, 0.26);
   border-radius: 18px;
@@ -364,6 +383,15 @@ a {
   color: #1f332d;
   box-shadow: 0 24px 48px rgba(13, 24, 31, 0.22), 0 10px 20px rgba(13, 24, 31, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.48);
   transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+  overflow: hidden;
+}
+
+.admin-action-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: linear-gradient(90deg, rgba(39, 91, 77, 0.9), rgba(135, 165, 148, 0.72));
 }
 
 .admin-action-card:hover,
@@ -725,11 +753,21 @@ a {
 }
 
 .metric-card {
+  position: relative;
   padding: 18px 20px;
   border: 1px solid rgba(24, 43, 38, 0.24);
   border-radius: 20px;
   background: linear-gradient(180deg, rgba(205, 222, 212, 0.99), rgba(179, 202, 190, 0.94));
   box-shadow: 0 24px 48px rgba(13, 24, 31, 0.22), 0 10px 20px rgba(13, 24, 31, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  overflow: hidden;
+}
+
+.metric-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: linear-gradient(90deg, rgba(38, 85, 72, 0.92), rgba(136, 166, 148, 0.72));
 }
 
 .metric-card-action {
@@ -750,14 +788,14 @@ a {
   color: var(--muted);
   font-size: 0.8rem;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0;
 }
 
 .metric-card-value {
   margin-top: 8px;
   font-size: 2rem;
   font-weight: 700;
-  letter-spacing: -0.04em;
+  letter-spacing: 0;
 }
 
 .portal-table {
