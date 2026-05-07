@@ -1,20 +1,25 @@
 const sgMail = require('@sendgrid/mail');
 const { SESClient, SendEmailCommand } = require('@aws-sdk/client-ses');
 
-const fromEmail = process.env.EMAIL_FROM || 'no-reply@yourhoa.com';
-const emailProvider = String(process.env.EMAIL_PROVIDER || '').toLowerCase();
+function cleanEnv(value) {
+  return String(value || '').trim().replace(/^["']|["']$/g, '');
+}
+
+const fromEmail = cleanEnv(process.env.EMAIL_FROM) || 'no-reply@yourhoa.com';
+const emailProvider = cleanEnv(process.env.EMAIL_PROVIDER).toLowerCase();
 
 function getSesRegion() {
-  return process.env.SES_AWS_REGION || process.env.AWS_REGION;
+  return cleanEnv(process.env.SES_AWS_REGION) || cleanEnv(process.env.AWS_REGION);
 }
 
 function getSesCredentials() {
-  const accessKeyId = process.env.SES_AWS_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY_ID;
-  const secretAccessKey = process.env.SES_AWS_SECRET_ACCESS_KEY || process.env.AWS_SECRET_ACCESS_KEY;
+  const accessKeyId = cleanEnv(process.env.SES_AWS_ACCESS_KEY_ID) || cleanEnv(process.env.AWS_ACCESS_KEY_ID);
+  const secretAccessKey = cleanEnv(process.env.SES_AWS_SECRET_ACCESS_KEY) || cleanEnv(process.env.AWS_SECRET_ACCESS_KEY);
+  const sessionToken = cleanEnv(process.env.SES_AWS_SESSION_TOKEN) || cleanEnv(process.env.AWS_SESSION_TOKEN);
   if (!accessKeyId || !secretAccessKey) {
     return undefined;
   }
-  return { accessKeyId, secretAccessKey };
+  return sessionToken ? { accessKeyId, secretAccessKey, sessionToken } : { accessKeyId, secretAccessKey };
 }
 
 class EmailDeliveryError extends Error {
@@ -56,13 +61,17 @@ function isEmailConfigured() {
 
 async function sendViaSes({ to, subject, text, html }) {
   const region = getSesRegion();
+  const credentials = getSesCredentials();
   if (!region) {
     throw new EmailDeliveryError('SES region is not configured');
+  }
+  if (!credentials) {
+    throw new EmailDeliveryError('SES access key and secret key are not configured');
   }
 
   const client = new SESClient({
     region,
-    credentials: getSesCredentials()
+    credentials
   });
 
   try {
