@@ -711,6 +711,20 @@ a {
   border-top: 1px solid var(--line);
 }
 
+.event-create-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.event-create-form .mb-3 {
+  margin-bottom: 0 !important;
+}
+
+.event-form-wide {
+  grid-column: 1 / -1;
+}
+
 .maintenance-editor {
   margin-bottom: 14px;
   padding: 18px;
@@ -1341,6 +1355,10 @@ a {
 
 @media (max-width: 640px) {
   .compact-user-form {
+    grid-template-columns: 1fr;
+  }
+
+  .event-create-form {
     grid-template-columns: 1fr;
   }
 
