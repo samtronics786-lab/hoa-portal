@@ -14,7 +14,7 @@ flowchart LR
     FE --> API["Backend API<br/>Node.js + Express<br/>Railway"]
     API --> DB["Managed PostgreSQL<br/>Railway Postgres"]
     API --> SMS["Twilio<br/>SMS OTP + Notifications"]
-    API --> MAIL["SendGrid or Amazon SES<br/>Email Notifications"]
+    API --> MAIL["Amazon SES<br/>Email Notifications"]
     API --> STORE["Cloud Storage<br/>Cloudflare R2 or Amazon S3"]
     API --> MON["Monitoring / Logging / Alerts"]
 ```
@@ -29,7 +29,7 @@ flowchart LR
 | Data | PostgreSQL | Stores users, tickets, surveys, events, sessions, audit logs | Ready candidate |
 | Authentication | Mobile OTP + staff login | Homeowner SMS login and staff username/password access | Needs enhancement |
 | Messaging | Twilio | SMS delivery for homeowner login codes | Needs procurement/config |
-| Messaging | SendGrid / SES | Ticket and system email notifications | Needs procurement/config |
+| Messaging | Amazon SES | Ticket and system email notifications | Needs procurement/config |
 | Storage | R2 / S3 | Cloud file storage for documents, event assets, attachments | Needs procurement + implementation |
 | Security edge | Cloudflare | DNS, SSL, WAF, and public routing | Needs procurement/config |
 | Operations | Monitoring / alerts | Uptime, error tracking, and operational visibility | Needs enhancement |
@@ -54,7 +54,7 @@ Before publishing to production, the following items should be completed:
 - tighten CORS and add security middleware such as `helmet`
 - add production health checks and startup env validation
 - configure real Twilio SMS delivery
-- configure real email delivery through SendGrid or Amazon SES
+- configure real email delivery through Amazon SES
 - add monitoring, alerting, and backup validation
 - test staging thoroughly before pilot release
 
@@ -66,7 +66,7 @@ The best production shape for this application is:
 - `Postgres` on Railway
 - `Cloudflare` in front of both services
 - `Twilio` for SMS-based homeowner OTP
-- `SendGrid` or `Amazon SES` for outbound email
+- `Amazon SES` for outbound email
 - `Cloudflare R2` or `Amazon S3` for uploaded files
 
 ## Recommended Public URLs
@@ -92,7 +92,7 @@ The best production shape for this application is:
 
 ### Needs Procurement / Configuration
 - Twilio
-- SendGrid or Amazon SES
+- Amazon SES
 - Cloudflare
 - R2 or S3
 - production domains

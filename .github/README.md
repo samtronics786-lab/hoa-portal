@@ -16,7 +16,7 @@ Usage from Copilot Chat:
 
 - After cloning the repo, before any `npm run` command.
 - Before running `docker compose up`.
-- When debugging environment variable mismatches or service dependencies (Postgres, Stripe, SendGrid).
+- When debugging environment variable mismatches or service dependencies (Postgres, Stripe, Amazon SES).
 
 ## Required env file
 
@@ -33,7 +33,7 @@ Set values:
 - `PGHOST`, `PGPORT`, `PGUSER`, `PGPASSWORD`, `PGDATABASE`
 - `REACT_APP_API_URL`
 - `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`
-- `SENDGRID_API_KEY`, `EMAIL_FROM`
+- `EMAIL_PROVIDER`, `EMAIL_FROM`, `SES_AWS_REGION`, `SES_AWS_ACCESS_KEY_ID`, `SES_AWS_SECRET_ACCESS_KEY`
 
 ## Start commands
 

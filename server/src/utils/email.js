@@ -1,4 +1,3 @@
-const sgMail = require('@sendgrid/mail');
 const { SESClient, SendEmailCommand } = require('@aws-sdk/client-ses');
 
 function cleanEnv(value) {
@@ -38,10 +37,6 @@ function resolveEmailProvider() {
     return 'ses';
   }
 
-  if (process.env.SENDGRID_API_KEY) {
-    return 'sendgrid';
-  }
-
   return 'none';
 }
 
@@ -50,10 +45,6 @@ function isEmailConfigured() {
 
   if (provider === 'ses') {
     return Boolean(fromEmail && getSesCredentials() && getSesRegion());
-  }
-
-  if (provider === 'sendgrid') {
-    return Boolean(process.env.SENDGRID_API_KEY && fromEmail);
   }
 
   return false;
@@ -109,34 +100,11 @@ async function sendViaSes({ to, subject, text, html }) {
   }
 }
 
-async function sendViaSendGrid({ to, subject, text, html }) {
-  if (!process.env.SENDGRID_API_KEY) {
-    throw new EmailDeliveryError('Email provider is not configured');
-  }
-
-  try {
-    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-    await sgMail.send({
-      to,
-      from: fromEmail,
-      subject,
-      text,
-      html: html || `<pre>${text}</pre>`
-    });
-  } catch (error) {
-    throw new EmailDeliveryError(error?.response?.body?.errors?.[0]?.message || 'Email delivery failed');
-  }
-}
-
 async function sendEmail({ to, subject, text, html }) {
   const provider = resolveEmailProvider();
 
   if (provider === 'ses') {
     return sendViaSes({ to, subject, text, html });
-  }
-
-  if (provider === 'sendgrid') {
-    return sendViaSendGrid({ to, subject, text, html });
   }
 
   if (!provider || provider === 'none') {

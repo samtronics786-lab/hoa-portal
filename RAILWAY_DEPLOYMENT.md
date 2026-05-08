@@ -57,7 +57,6 @@ Optional integrations:
 - `SES_AWS_REGION`
 - `SES_AWS_ACCESS_KEY_ID`
 - `SES_AWS_SECRET_ACCESS_KEY`
-- `SENDGRID_API_KEY`
 - `EMAIL_FROM`
 - `STORAGE_PROVIDER=r2`
 - `STORAGE_BUCKET`
@@ -111,7 +110,7 @@ Before a real pilot launch, also complete:
 1. Set `EMAIL_PROVIDER=ses` and use the dedicated `SES_AWS_*` credentials for Amazon SES
 2. Set `STORAGE_PROVIDER=r2` and use the dedicated `STORAGE_AWS_*` credentials for Cloudflare R2 or S3 uploads
 3. Replace the bootstrap migration with explicit future migrations
-4. Configure real SMS/email delivery
+4. Configure real Twilio SMS and Amazon SES email delivery
 5. Add rate limiting to authentication endpoints
 6. Add monitoring and backups
 

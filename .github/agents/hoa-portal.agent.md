@@ -14,7 +14,7 @@ Use this agent when you need a checklist and remediation steps to make the app r
 
 - Scans repository files (`package.json`, `server/src`, `client/src`, `.env.sample`, `docker-compose.yml`, etc.)
 - Detects required env vars and config values
-- Verifies DB and service dependencies (PostgreSQL, Stripe, SendGrid)
+- Verifies DB and service dependencies (PostgreSQL, Stripe, Amazon SES)
 - Recommends exact npm commands for local/dev/docker startup
 - Extracts the source of truth (e.g., `server/src/index.js`, `server/config/db.js`, `client` API URL)
 
@@ -39,7 +39,7 @@ Use this agent when you need a checklist and remediation steps to make the app r
    - SERVER: PORT, JWT_SECRET, BCRYPT_SALT_ROUNDS, PGHOST, PGPORT, PGUSER, PGPASSWORD, PGDATABASE
    - CLIENT: REACT_APP_API_URL
    - STRIPE: STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET
-   - EMAIL: SENDGRID_API_KEY, EMAIL_FROM
+   - EMAIL: EMAIL_PROVIDER, EMAIL_FROM, SES_AWS_REGION, SES_AWS_ACCESS_KEY_ID, SES_AWS_SECRET_ACCESS_KEY
 
 3. Database migrations occur via `sequelize.sync({ alter: true })` in `server/src/index.js`.
 4. Docker compose should provide PostgreSQL host `postgres`.
