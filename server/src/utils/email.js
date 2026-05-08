@@ -4,7 +4,7 @@ function cleanEnv(value) {
   return String(value || '').trim().replace(/^["']|["']$/g, '');
 }
 
-const fromEmail = cleanEnv(process.env.EMAIL_FROM) || 'no-reply@yourhoa.com';
+const fromEmail = cleanEnv(process.env.EMAIL_FROM) || 'no-reply@deanspondcommunity.com';
 const emailProvider = cleanEnv(process.env.EMAIL_PROVIDER).toLowerCase();
 
 function getSesRegion() {

@@ -34,7 +34,7 @@ STRIPE_WEBHOOK_SECRET=whsec_...
 
 # Email via SES
 EMAIL_PROVIDER=ses
-EMAIL_FROM=notifications@deanspondcommunity.com
+EMAIL_FROM=no-reply@deanspondcommunity.com
 SES_AWS_REGION=us-east-1
 SES_AWS_ACCESS_KEY_ID=REPLACE_WITH_SES_ACCESS_KEY
 SES_AWS_SECRET_ACCESS_KEY=REPLACE_WITH_SES_SECRET

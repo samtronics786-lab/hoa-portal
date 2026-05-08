@@ -1,7 +1,7 @@
 (function() {
   const user = {
     id: 'test-superadmin-id',
-    email: 'superadmin@hoa.com',
+    email: 'superadmin@deanspondcommunity.com',
     username: 'superadmin',
     mobileNumber: null,
     role: 'super_admin',

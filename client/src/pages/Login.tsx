@@ -180,7 +180,7 @@ export default function Login({ onLogin }: LoginProps) {
                     <form onSubmit={requestCode} className="portal-form">
                       <div className="mb-3">
                         <label className="form-label">Registered Email or Mobile Number</label>
-                        <input value={homeownerIdentifier} onChange={(e) => setHomeownerIdentifier(e.target.value)} className="form-control" placeholder="owner@example.com or (555) 100-0002" />
+                        <input value={homeownerIdentifier} onChange={(e) => setHomeownerIdentifier(e.target.value)} className="form-control" placeholder="owner@deanspondcommunity.com or (555) 100-0002" />
                       </div>
                       {error && <div className="alert alert-danger">{error}</div>}
                       <button type="submit" className="btn portal-btn w-100">Send Login Code</button>
@@ -226,7 +226,7 @@ export default function Login({ onLogin }: LoginProps) {
               <form onSubmit={requestReset} className="portal-form">
                 <div className="mb-3">
                   <label className="form-label">Staff Account Email</label>
-                  <input value={resetEmail} onChange={(e) => setResetEmail(e.target.value)} type="email" className="form-control" placeholder="name@hoa.com" />
+                  <input value={resetEmail} onChange={(e) => setResetEmail(e.target.value)} type="email" className="form-control" placeholder="name@deanspondcommunity.com" />
                 </div>
                 <button type="submit" className="btn portal-btn w-100" disabled={resetState === 'requesting'}>
                   {resetState === 'requesting' ? 'Sending email...' : 'Send Reset Email'}

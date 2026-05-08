@@ -32,8 +32,8 @@ async function seed() {
   const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS || '10', 10);
 
   const superAdminPwd = await bcrypt.hash('Admin123!', saltRounds);
-  const superAdmin = await User.create({ email: 'superadmin@hoa.com', username: 'superadmin', passwordHash: superAdminPwd, role: 'super_admin' });
-  const managementAdmin = await User.create({ email: 'manager@hoa.com', username: 'manager', passwordHash: await bcrypt.hash('Manager123!', saltRounds), role: 'management_admin' });
+  const superAdmin = await User.create({ email: 'superadmin@deanspondcommunity.com', username: 'superadmin', passwordHash: superAdminPwd, role: 'super_admin' });
+  const managementAdmin = await User.create({ email: 'manager@deanspondcommunity.com', username: 'manager', passwordHash: await bcrypt.hash('Manager123!', saltRounds), role: 'management_admin' });
 
   const community = await HOACommunity.create({ name: 'Deans Pond HOA', address: '100 Main Street, NJ', description: 'Single-family community' });
   const lots = [];
@@ -47,7 +47,7 @@ async function seed() {
     const lot = lots[i-1];
     const phone = `+1555100${String(i).padStart(4, '0')}`;
     const homeownerUser = await User.create({
-      email: `homeowner${i}@hoa.com`,
+      email: `homeowner${i}@deanspondcommunity.com`,
       username: `homeowner${i}`,
       mobileNumber: phone,
       passwordHash: await bcrypt.hash('Homeowner123!', saltRounds),
@@ -55,7 +55,7 @@ async function seed() {
     });
     const homeowner = await Homeowner.create({
       name: `Homeowner ${i}`,
-      email: `homeowner${i}@hoa.com`,
+      email: `homeowner${i}@deanspondcommunity.com`,
       phone,
       propertyLotId: lot.id,
       userId: homeownerUser.id
@@ -64,9 +64,9 @@ async function seed() {
   }
 
   const boardHomeowner = homeowners[0];
-  const boardUser = await User.create({ email: 'board@hoa.com', username: 'board', passwordHash: await bcrypt.hash('Board123!', saltRounds), role: 'board_member' });
+  const boardUser = await User.create({ email: 'board@deanspondcommunity.com', username: 'board', passwordHash: await bcrypt.hash('Board123!', saltRounds), role: 'board_member' });
   boardHomeowner.userId = boardUser.id;
-  boardHomeowner.email = 'board@hoa.com';
+  boardHomeowner.email = 'board@deanspondcommunity.com';
   await boardHomeowner.save();
 
   await BoardMemberAssignment.create({
