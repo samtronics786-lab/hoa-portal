@@ -46,7 +46,12 @@ function buildTicketInclude() {
       model: Homeowner,
       as: 'homeowner',
       attributes: ['id', 'name', 'email', 'phone', 'propertyLotId'],
-      include: [{ model: PropertyLot, as: 'propertyLot', attributes: ['id', 'lotNumber', 'address', 'hoaCommunityId'] }]
+      include: [{
+        model: PropertyLot,
+        as: 'propertyLot',
+        attributes: ['id', 'lotNumber', 'address', 'hoaCommunityId'],
+        include: [{ model: HOACommunity, as: 'community', attributes: ['id', 'name'] }]
+      }]
     },
     { model: MaintenanceAttachment, as: 'attachments' },
     {

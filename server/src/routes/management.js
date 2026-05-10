@@ -48,7 +48,12 @@ function buildTicketInclude() {
     model: Homeowner,
     as: 'homeowner',
     attributes: ['id', 'name', 'email', 'phone'],
-    include: [{ model: PropertyLot, as: 'propertyLot', attributes: ['id', 'lotNumber', 'address', 'hoaCommunityId'] }]
+    include: [{
+      model: PropertyLot,
+      as: 'propertyLot',
+      attributes: ['id', 'lotNumber', 'address', 'hoaCommunityId'],
+      include: [{ model: HOACommunity, as: 'community', attributes: ['id', 'name'] }]
+    }]
   }, {
     model: MaintenanceAttachment,
     as: 'attachments'
@@ -79,12 +84,7 @@ router.get('/overview', async (req, res) => {
       where: {
         status: { [Op.in]: ['submitted', 'in_review', 'assigned', 'in_progress'] }
       },
-      include: [{
-        model: Homeowner,
-        as: 'homeowner',
-        attributes: ['id', 'name'],
-        include: [{ model: PropertyLot, as: 'propertyLot', attributes: ['hoaCommunityId'] }]
-      }],
+      include: buildTicketInclude(),
       order: [['createdAt', 'DESC']],
       limit: 8
     }),
@@ -939,23 +939,41 @@ router.get('/reports/maintenance', async (req, res) => {
     include: [{
       model: Homeowner,
       as: 'homeowner',
-      attributes: ['name'],
-      include: [{ model: PropertyLot, as: 'propertyLot', attributes: ['address', 'hoaCommunityId'], where: { hoaCommunityId: { [Op.in]: scopedCommunityIds } } }]
+      attributes: ['id', 'name', 'email', 'phone'],
+      include: [{
+        model: PropertyLot,
+        as: 'propertyLot',
+        attributes: ['id', 'lotNumber', 'address', 'hoaCommunityId'],
+        where: { hoaCommunityId: { [Op.in]: scopedCommunityIds } },
+        include: [{ model: HOACommunity, as: 'community', attributes: ['id', 'name'] }]
+      }]
     }, {
       model: MaintenanceAttachment,
       as: 'attachments',
+      attributes: ['id']
+    }, {
+      model: MaintenanceComment,
+      as: 'comments',
       attributes: ['id']
     }],
     order: [['createdAt', 'DESC']]
   });
   const data = rows.map((request) => ({
+    ticketNumber: request.ticketNumber,
     homeowner: request.homeowner?.name,
+    homeownerEmail: request.homeowner?.email,
+    homeownerPhone: request.homeowner?.phone,
+    lotNumber: request.homeowner?.propertyLot?.lotNumber,
     property: request.homeowner?.propertyLot?.address,
+    community: request.homeowner?.propertyLot?.community?.name,
     category: request.category,
     title: request.title,
+    description: request.description,
     priority: request.priority,
     status: request.status,
     attachments: request.attachments?.length || 0,
+    comments: request.comments?.length || 0,
+    updatedAt: request.updatedAt ? new Date(request.updatedAt).toISOString() : '',
     createdAt: request.createdAt ? new Date(request.createdAt).toISOString() : ''
   }));
   if (req.query.format === 'csv') {
