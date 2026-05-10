@@ -15,7 +15,8 @@ const {
   User,
   Survey,
   SurveyOption,
-  SurveyResponse
+  SurveyResponse,
+  sequelize
 } = require('../models');
 const { logAudit } = require('../utils/auditLog');
 const { saveBase64Upload } = require('../utils/uploads');
@@ -44,8 +45,8 @@ function buildTicketInclude() {
     {
       model: Homeowner,
       as: 'homeowner',
-      attributes: ['id', 'name', 'propertyLotId'],
-      include: [{ model: PropertyLot, as: 'propertyLot', attributes: ['id', 'address', 'hoaCommunityId'] }]
+      attributes: ['id', 'name', 'email', 'phone', 'propertyLotId'],
+      include: [{ model: PropertyLot, as: 'propertyLot', attributes: ['id', 'lotNumber', 'address', 'hoaCommunityId'] }]
     },
     { model: MaintenanceAttachment, as: 'attachments' },
     {
@@ -54,6 +55,30 @@ function buildTicketInclude() {
       include: [{ model: User, as: 'user', attributes: ['id', 'username', 'email', 'role'] }]
     }
   ];
+}
+
+function normalizeTicketDescription(value = '') {
+  return String(value).trim().replace(/\s+/g, ' ').toLowerCase();
+}
+
+function ticketDateStamp(value = new Date()) {
+  const date = new Date(value);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}${month}${day}`;
+}
+
+async function generateTicketNumber(transaction) {
+  const dateStamp = ticketDateStamp();
+  const [rows] = await sequelize.query(
+    `SELECT COALESCE(MAX(CAST(RIGHT("ticketNumber", 5) AS INTEGER)), 0) AS current
+     FROM maintenance_requests
+     WHERE "ticketNumber" LIKE $1`,
+    { bind: [`${dateStamp}-%`], transaction }
+  );
+  const next = Number(rows[0]?.current || 0) + 1;
+  return `${dateStamp}-${String(next).padStart(5, '0')}`;
 }
 
 router.get('/me', async (req, res) => {
@@ -169,19 +194,43 @@ router.post('/maintenance', async (req, res) => {
     const homeowner = await getHomeownerContext(req.user.id);
     if (!homeowner) return res.status(404).json({ message: 'Homeowner profile not found' });
 
-    const { category, title, description, priority, attachments = [] } = req.body;
+    const { category, title, description, priority, attachments = [], allowDuplicate = false } = req.body;
     if (!category || !title || !description) {
       return res.status(400).json({ message: 'Category, title, and description are required' });
     }
 
-    const request = await MaintenanceRequest.create({
+    const activeOwnerRequests = await MaintenanceRequest.findAll({
+      where: {
+        homeownerId: homeowner.id,
+        status: { [Op.notIn]: ['completed', 'closed'] }
+      },
+      order: [['createdAt', 'DESC']]
+    });
+    const normalizedDescription = normalizeTicketDescription(description);
+    const similarTicket = activeOwnerRequests.find((request) => normalizeTicketDescription(request.description) === normalizedDescription);
+    if (similarTicket && !allowDuplicate) {
+      return res.status(409).json({
+        message: 'A similar open ticket already exists for this description.',
+        code: 'DUPLICATE_TICKET',
+        similarTicket: {
+          id: similarTicket.id,
+          ticketNumber: similarTicket.ticketNumber,
+          title: similarTicket.title,
+          status: similarTicket.status,
+          createdAt: similarTicket.createdAt
+        }
+      });
+    }
+
+    const request = await sequelize.transaction(async (transaction) => MaintenanceRequest.create({
       homeownerId: homeowner.id,
       propertyLotId: homeowner.propertyLotId,
+      ticketNumber: await generateTicketNumber(transaction),
       category,
       title,
       description,
       priority
-    });
+    }, { transaction }));
 
     if (Array.isArray(attachments) && attachments.length) {
       await Promise.all(attachments.map(async (attachment) => {
@@ -213,8 +262,8 @@ router.post('/maintenance', async (req, res) => {
     const recipients = await getTicketNotificationRecipients(homeowner.propertyLot.hoaCommunityId);
     await sendTicketEmail({
       to: recipients,
-      subject: `New homeowner ticket: ${title}`,
-      text: `A new ticket was created in ${homeowner.propertyLot.community.name}.\n\nHomeowner: ${homeowner.name}\nProperty: ${homeowner.propertyLot.address}\nCategory: ${category}\nPriority: ${priority || 'medium'}\nTitle: ${title}\n\nDescription:\n${description}`
+      subject: `New homeowner ticket ${request.ticketNumber}: ${title}`,
+      text: `A new ticket was created in ${homeowner.propertyLot.community.name}.\n\nTicket: ${request.ticketNumber}\nHomeowner: ${homeowner.name}\nProperty: ${homeowner.propertyLot.address}\nCategory: ${category}\nPriority: ${priority || 'medium'}\nTitle: ${title}\n\nDescription:\n${description}`
     });
 
     res.status(201).json(request);

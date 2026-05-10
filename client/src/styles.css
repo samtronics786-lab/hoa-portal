@@ -1307,6 +1307,61 @@ a {
   margin-top: 12px;
 }
 
+.ticket-number {
+  display: inline-flex;
+  margin-bottom: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(47, 79, 118, 0.12);
+  color: var(--board);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.ticket-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.ticket-meta-grid div {
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.ticket-meta-grid span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+}
+
+.ticket-meta-grid strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.92rem;
+}
+
+.ticket-attachment-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.ticket-attachment-link {
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: rgba(44, 91, 79, 0.1);
+  color: var(--primary-700);
+  font-size: 0.86rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
 .timeline-copy {
   color: var(--ink);
   line-height: 1.55;

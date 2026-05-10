@@ -219,6 +219,7 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
       },
+      ticketNumber: { type: DataTypes.STRING, unique: true },
       category: { type: DataTypes.STRING, allowNull: false },
       title: { type: DataTypes.STRING, allowNull: false },
       description: { type: DataTypes.TEXT, allowNull: false },

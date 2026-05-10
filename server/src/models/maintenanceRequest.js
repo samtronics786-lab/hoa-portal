@@ -7,6 +7,7 @@ MaintenanceRequest.init({
   id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
   homeownerId: { type: DataTypes.UUID, allowNull: false },
   propertyLotId: { type: DataTypes.UUID, allowNull: false },
+  ticketNumber: { type: DataTypes.STRING, unique: true },
   category: { type: DataTypes.STRING, allowNull: false },
   title: { type: DataTypes.STRING, allowNull: false },
   description: { type: DataTypes.TEXT, allowNull: false },
