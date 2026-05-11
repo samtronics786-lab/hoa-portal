@@ -1362,6 +1362,10 @@ a {
   text-decoration: none;
 }
 
+.ticket-create-modal {
+  max-width: 620px;
+}
+
 .timeline-copy {
   color: var(--ink);
   line-height: 1.55;

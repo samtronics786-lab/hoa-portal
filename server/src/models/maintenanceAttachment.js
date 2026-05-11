@@ -7,7 +7,9 @@ MaintenanceAttachment.init({
   id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
   maintenanceRequestId: { type: DataTypes.UUID, allowNull: false },
   fileName: { type: DataTypes.STRING, allowNull: false },
-  url: { type: DataTypes.STRING, allowNull: false },
+  url: { type: DataTypes.STRING },
+  mimeType: { type: DataTypes.STRING },
+  fileData: { type: DataTypes.BLOB('long') },
   uploadedById: { type: DataTypes.UUID, allowNull: false }
 }, {
   sequelize,

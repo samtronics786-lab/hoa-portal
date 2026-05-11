@@ -86,6 +86,37 @@ async function generateTicketNumber(transaction) {
   return `${dateStamp}-${String(next).padStart(5, '0')}`;
 }
 
+function parseBase64Attachment(fileData) {
+  const match = String(fileData || '').match(/^data:(.+);base64,(.+)$/);
+  if (!match) {
+    const error = new Error('Uploaded file format is invalid');
+    error.statusCode = 400;
+    throw error;
+  }
+  return {
+    mimeType: match[1],
+    buffer: Buffer.from(match[2], 'base64')
+  };
+}
+
+function attachmentDataUrl(attachment) {
+  const raw = attachment.fileData;
+  if (!raw || !attachment.mimeType) return null;
+  const buffer = Buffer.isBuffer(raw) ? raw : Array.isArray(raw?.data) ? Buffer.from(raw.data) : Buffer.from(raw);
+  return `data:${attachment.mimeType};base64,${buffer.toString('base64')}`;
+}
+
+function serializeTicket(ticket) {
+  const json = ticket.toJSON ? ticket.toJSON() : ticket;
+  const attachments = ticket.attachments || json.attachments || [];
+  json.attachments = attachments.map((attachment) => ({
+    ...(attachment.toJSON ? attachment.toJSON() : attachment),
+    fileData: undefined,
+    dataUrl: attachmentDataUrl(attachment)
+  }));
+  return json;
+}
+
 router.get('/me', async (req, res) => {
   const homeowner = await getHomeownerContext(req.user.id);
   if (!homeowner) return res.status(404).json({ message: 'Homeowner profile not found' });
@@ -239,6 +270,7 @@ router.post('/maintenance', async (req, res) => {
 
     if (Array.isArray(attachments) && attachments.length) {
       await Promise.all(attachments.map(async (attachment) => {
+        const parsed = parseBase64Attachment(attachment.fileData);
         const upload = await saveBase64Upload({
           req,
           fileData: attachment.fileData,
@@ -250,6 +282,8 @@ router.post('/maintenance', async (req, res) => {
           maintenanceRequestId: request.id,
           fileName: attachment.fileName,
           url: upload.url,
+          mimeType: parsed.mimeType,
+          fileData: parsed.buffer,
           uploadedById: req.user.id
         });
       }));
@@ -271,7 +305,8 @@ router.post('/maintenance', async (req, res) => {
       text: `A new ticket was created in ${homeowner.propertyLot.community.name}.\n\nTicket: ${request.ticketNumber}\nHomeowner: ${homeowner.name}\nProperty: ${homeowner.propertyLot.address}\nCategory: ${category}\nPriority: ${priority || 'medium'}\nTitle: ${title}\n\nDescription:\n${description}`
     });
 
-    res.status(201).json(request);
+    const createdRequest = await MaintenanceRequest.findByPk(request.id, { include: buildTicketInclude() });
+    res.status(201).json(serializeTicket(createdRequest));
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Failed to submit ticket' });
@@ -302,7 +337,7 @@ router.get('/maintenance', async (req, res) => {
     order: [['createdAt', 'DESC']]
   });
 
-  res.json(requests);
+  res.json(requests.map(serializeTicket));
 });
 
 router.post('/maintenance/:requestId/comments', async (req, res) => {

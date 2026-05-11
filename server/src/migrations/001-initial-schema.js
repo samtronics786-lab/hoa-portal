@@ -247,7 +247,9 @@ module.exports = {
         onDelete: 'CASCADE'
       },
       fileName: { type: DataTypes.STRING, allowNull: false },
-      url: { type: DataTypes.STRING, allowNull: false },
+      url: { type: DataTypes.STRING },
+      mimeType: { type: DataTypes.STRING },
+      fileData: { type: DataTypes.BLOB('long') },
       uploadedById: {
         type: DataTypes.UUID,
         allowNull: false,

@@ -64,6 +64,37 @@ function buildTicketInclude() {
   }];
 }
 
+function parseBase64Attachment(fileData) {
+  const match = String(fileData || '').match(/^data:(.+);base64,(.+)$/);
+  if (!match) {
+    const error = new Error('Uploaded file format is invalid');
+    error.statusCode = 400;
+    throw error;
+  }
+  return {
+    mimeType: match[1],
+    buffer: Buffer.from(match[2], 'base64')
+  };
+}
+
+function attachmentDataUrl(attachment) {
+  const raw = attachment.fileData;
+  if (!raw || !attachment.mimeType) return null;
+  const buffer = Buffer.isBuffer(raw) ? raw : Array.isArray(raw?.data) ? Buffer.from(raw.data) : Buffer.from(raw);
+  return `data:${attachment.mimeType};base64,${buffer.toString('base64')}`;
+}
+
+function serializeTicket(ticket) {
+  const json = ticket.toJSON ? ticket.toJSON() : ticket;
+  const attachments = ticket.attachments || json.attachments || [];
+  json.attachments = attachments.map((attachment) => ({
+    ...(attachment.toJSON ? attachment.toJSON() : attachment),
+    fileData: undefined,
+    dataUrl: attachmentDataUrl(attachment)
+  }));
+  return json;
+}
+
 router.use(authenticate);
 router.use(authorize(['super_admin', 'management_admin', 'community_manager', 'admin_staff']));
 
@@ -544,7 +575,7 @@ router.get('/maintenance', async (req, res) => {
     include: buildTicketInclude(),
     order: [['createdAt', 'DESC']]
   });
-  res.json(requests.filter((request) => communityIds.includes(request.homeowner?.propertyLot?.hoaCommunityId)));
+  res.json(requests.filter((request) => communityIds.includes(request.homeowner?.propertyLot?.hoaCommunityId)).map(serializeTicket));
 });
 
 router.post('/maintenance/:requestId/attachments', async (req, res) => {
@@ -562,6 +593,7 @@ router.post('/maintenance/:requestId/attachments', async (req, res) => {
     if (!fileData || !fileName) {
       return res.status(400).json({ message: 'Attachment file is required' });
     }
+    const parsed = parseBase64Attachment(fileData);
     const upload = await saveBase64Upload({
       req,
       fileData,
@@ -573,6 +605,8 @@ router.post('/maintenance/:requestId/attachments', async (req, res) => {
       maintenanceRequestId: request.id,
       fileName,
       url: upload.url,
+      mimeType: parsed.mimeType,
+      fileData: parsed.buffer,
       uploadedById: req.user.id
     });
     await logAudit({ req, userId: req.user.id, action: 'management.add_maintenance_attachment', entityType: 'maintenance_attachment', entityId: attachment.id });
